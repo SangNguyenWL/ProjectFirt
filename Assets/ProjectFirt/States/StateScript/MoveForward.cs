@@ -7,6 +7,7 @@ namespace projectfirt
     [CreateAssetMenu(fileName = "New State", menuName = "ProjectFirt/AbilityData/MoveForward")]
     public class MoveForward : StateData
     {
+        public bool Constant;
         public AnimationCurve SpeedGraph;
         public float Speed;
         public float BlockDistance;
@@ -25,6 +26,31 @@ namespace projectfirt
                 animator.SetBool(TransitionParameter.Jump.ToString(), true);
             }
 
+            if(Constant)
+            {
+                ConstantMove(p, animator, stateInfo);
+            }
+            else
+            {
+                ControllerMove(p,animator,stateInfo);
+            }
+        }
+
+        public override void OnExit(CharacterState characterState, Animator animator, AnimatorStateInfo stateInfo)
+        {
+            
+        }
+
+        private void ConstantMove(PlayerControler p, Animator animator, AnimatorStateInfo stateInfo)
+        {
+            if(!CheckFront(p))
+            {
+                p.transform.Translate(Vector3.forward * Speed * SpeedGraph.Evaluate(stateInfo.normalizedTime) * Time.deltaTime);
+            }
+        }
+
+        private void ControllerMove(PlayerControler p, Animator animator, AnimatorStateInfo stateInfo)
+        {
             if (p.MoveRight && p.MoveLeft)
             {
                 animator.SetBool(TransitionParameter.Move.ToString(), false);
@@ -54,11 +80,6 @@ namespace projectfirt
                     p.transform.Translate(Vector3.forward * Speed * SpeedGraph.Evaluate(stateInfo.normalizedTime) * Time.deltaTime);
                 }
             }
-        }
-
-        public override void OnExit(CharacterState characterState, Animator animator, AnimatorStateInfo stateInfo)
-        {
-            
         }
 
         bool CheckFront(PlayerControler control)

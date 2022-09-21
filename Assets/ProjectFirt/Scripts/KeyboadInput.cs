@@ -34,6 +34,15 @@ namespace projectfirt
             {
                 VirtualInputManger.Instace.Jump = false;
             }
+
+            if(Input.GetKey(KeyCode.J))
+            {
+                VirtualInputManger.Instace.Attack = true;
+            }
+            else
+            {
+                VirtualInputManger.Instace.Attack = false;
+            }
         }
     }
 }

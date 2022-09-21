@@ -53,6 +53,7 @@ namespace projectfirt
                     RaycastHit hit;
                     if (Physics.Raycast(o.transform.position, -Vector3.up, out hit, Distance))
                     {
+                        //if(!control.RagdollParts.Contains(hit.collider))
                         return true;
                     }
                 }

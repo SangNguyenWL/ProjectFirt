@@ -42,6 +42,15 @@ namespace projectfirt
             {
                 playerControler.Jump = false;
             }
+
+            if(VirtualInputManger.Instace.Attack)
+            {
+                playerControler.Attack = true;
+            }
+            else
+            {
+                playerControler.Attack = false;
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ namespace projectfirt
         Jump,
         ForceTransition,
         Grounded,
+        Attack,
     }
 
     public class PlayerControler : MonoBehaviour
@@ -19,7 +20,9 @@ namespace projectfirt
         public bool MoveRight;
         public bool MoveLeft;
         public bool Jump;
+        public bool Attack;
         public GameObject ColliderEdgePrefab;
+        //public Collider[] Colliders;
         public List<GameObject> BottomSpheres = new List<GameObject>();
         public List<GameObject> FrontSpheres = new List<GameObject>();
 
@@ -40,6 +43,21 @@ namespace projectfirt
         }
 
         private void Awake()
+        {
+            SetColliderSpheres();
+        }
+
+        //private void SetRagdollParts()
+        //{
+        //    Colliders = GetComponentInChildren<Collider>();
+
+        //    foreach(Collider c in Colliders)
+        //    {
+        //        c.isTrigger = true;
+        //    }
+        //}
+
+        private void SetColliderSpheres()
         {
             BoxCollider box = GetComponent<BoxCollider>();
 
@@ -64,7 +82,7 @@ namespace projectfirt
 
 
             float horSec = (bottomFront.transform.position - bottomBack.transform.position).magnitude / 5f;
-            CreateMiddleSpheres(bottomFront, -this.transform.forward, horSec, 4,BottomSpheres);
+            CreateMiddleSpheres(bottomFront, -this.transform.forward, horSec, 4, BottomSpheres);
 
             float verSec = (bottomFront.transform.position - topFront.transform.position).magnitude / 10f;
             CreateMiddleSpheres(bottomFront, this.transform.up, verSec, 9, FrontSpheres);
