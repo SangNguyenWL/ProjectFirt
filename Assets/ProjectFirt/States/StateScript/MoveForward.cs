@@ -45,7 +45,7 @@ namespace projectfirt
         {
             if(!CheckFront(p))
             {
-                p.transform.Translate(Vector3.forward * Speed * SpeedGraph.Evaluate(stateInfo.normalizedTime) * Time.deltaTime);
+                p.MoveForward(Speed, SpeedGraph.Evaluate(stateInfo.normalizedTime));
             }
         }
 
@@ -68,7 +68,7 @@ namespace projectfirt
                 p.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
                 if (!CheckFront(p))
                 {
-                    p.transform.Translate(Vector3.forward * Speed * SpeedGraph.Evaluate(stateInfo.normalizedTime) * Time.deltaTime);
+                    p.MoveForward(Speed, SpeedGraph.Evaluate(stateInfo.normalizedTime));
                 }
             }
 
@@ -77,7 +77,7 @@ namespace projectfirt
                 p.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
                 if (!CheckFront(p))
                 {
-                    p.transform.Translate(Vector3.forward * Speed * SpeedGraph.Evaluate(stateInfo.normalizedTime) * Time.deltaTime);
+                    p.MoveForward(Speed, SpeedGraph.Evaluate(stateInfo.normalizedTime));
                 }
             }
         }
@@ -90,8 +90,36 @@ namespace projectfirt
                 RaycastHit hit;
                 if (Physics.Raycast(o.transform.position, control.transform.forward, out hit, BlockDistance))
                 {
-                    return true;
+                    if (!control.RagdollParts.Contains(hit.collider))
+                    {
+                        if (!IsBodyPart(hit.collider))
+                        {
+                            return true;
+                        }
+                    }
                 }
+            }
+
+            return false;
+        }
+
+        bool IsBodyPart(Collider col)
+        {
+            PlayerControler control = col.transform.root.GetComponent<PlayerControler>();
+
+            if (control == null)
+            {
+                return false;
+            }
+
+            if (control.gameObject == col.gameObject)
+            {
+                return false;
+            }
+
+            if (control.RagdollParts.Contains(col))
+            {
+                return true;
             }
 
             return false;

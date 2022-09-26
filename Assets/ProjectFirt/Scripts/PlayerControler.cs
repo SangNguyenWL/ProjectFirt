@@ -16,15 +16,16 @@ namespace projectfirt
     public class PlayerControler : MonoBehaviour
     {
 
-        public Animator animator;
+        public Animator SkinnedMeshAnimator;
         public bool MoveRight;
         public bool MoveLeft;
         public bool Jump;
         public bool Attack;
         public GameObject ColliderEdgePrefab;
-        //public Collider[] Colliders;
         public List<GameObject> BottomSpheres = new List<GameObject>();
         public List<GameObject> FrontSpheres = new List<GameObject>();
+        public List<Collider> RagdollParts = new List<Collider>();
+        public List<Collider> CollidingParts = new List<Collider>();
 
         public float GravityMutiplier;
         public float PullMultiplier;
@@ -44,18 +45,49 @@ namespace projectfirt
 
         private void Awake()
         {
+            bool SwitchBack = false;
+
+            if (!IsFacingForward())
+            {
+                SwitchBack = true;
+            }
+
+            FaceForward(true);
             SetColliderSpheres();
+            SetRagdollParts();
+
+            if (SwitchBack)
+            {
+                FaceForward(false);
+            }
         }
 
-        //private void SetRagdollParts()
-        //{
-        //    Colliders = GetComponentInChildren<Collider>();
+        private void SetRagdollParts()
+        {
+            Collider[] colliders = this.gameObject.GetComponentsInChildren<Collider>();
 
-        //    foreach(Collider c in Colliders)
-        //    {
-        //        c.isTrigger = true;
-        //    }
-        //}
+            foreach (Collider c in colliders)
+            {
+                c.isTrigger = true;
+                RagdollParts.Add(c);
+                c.gameObject.AddComponent<TriggerDetector>();
+            }
+        }
+
+        public void TurnOnRagdoll()
+        {
+            Rigidbody.useGravity = false;
+            Rigidbody.velocity = Vector3.zero;
+            this.gameObject.GetComponent<BoxCollider>().enabled = false;
+            SkinnedMeshAnimator.enabled = false;
+            SkinnedMeshAnimator.avatar = null;
+
+            foreach (Collider c in RagdollParts)
+            {
+                c.isTrigger = false;
+                c.attachedRigidbody.velocity = Vector3.zero;
+            }
+        }
 
         private void SetColliderSpheres()
         {
@@ -117,6 +149,35 @@ namespace projectfirt
         {
             GameObject obj = Instantiate(ColliderEdgePrefab, pos, Quaternion.identity);
             return obj;
+        }
+
+        public void MoveForward(float Speed, float SpeedGraph)
+        {
+            transform.Translate(Vector3.forward * Speed * SpeedGraph * Time.deltaTime);
+        }
+
+        public void FaceForward(bool forward)
+        {
+            if (forward)
+            {
+                transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+            }
+            else
+            {
+                transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+            }
+        }
+
+        public bool IsFacingForward()
+        {
+            if (transform.forward.z > 0f)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
